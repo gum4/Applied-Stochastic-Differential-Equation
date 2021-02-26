@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb 20 16:39:37 2021
+
+@author: gumenghan
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+import math
+
+
+    
+# Generate m N(0,sigma^2) variables
+def polar_marsaglia(sigma,m):
+    num = 0
+    X1,X2=[],[]
+    while num<m:
+        y1=random.uniform(-1,1)
+        y2=random.uniform(-1,1)
+        R_square = y1**2 + y2**2
+        if  R_square >= 1:
+            continue;
+        x1=sigma*(math.sqrt(-2*math.log(R_square)/R_square)*y1)
+        x2=sigma*(math.sqrt(-2*math.log(R_square)/R_square)*y2)
+        X1.append(x1)
+        X2.append(x2)
+        num+=1
+    X1,X2=np.array(X1),np.array(X2)
+    return X1,X2
+
+# Transform so that X and Y have correlation coefficient rho
+class biNormal_rho:
+    
+    def __init__(self, rho: 'float', sigma: 'float', m: int):
+        self.rho = rho
+        self.sigma = sigma
+        self.m = m
+    
+    def generate(self) -> 'tuple(np.array, np.array)':
+        theta = np.arcsin(self.rho) / 2
+        A,B = polar_marsaglia(sigma, m)
+        X = np.cos(theta) * A + np.sin(theta) * B
+        Y = np.sin(theta) * A + np.cos(theta) * B
+        return X, Y
+    
+# Test that X1 and X2 are independent N(0,sigma) variables
+#X1,X2=polar_marsaglia(2,1000)
+#np.corrcoef(X1, X2)
+    
+
+m = 10 ** 4
+rho = -0.4
+sigma = 2
+RES = biNormal_rho(rho, sigma, m)
+X, Y = RES.generate()
+
+#### for testing the correlation coefficient ###
+print(np.corrcoef(X, Y))
