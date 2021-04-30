@@ -21,15 +21,19 @@ theta = 0.3 # mean in GBM
 Sigma = 0.05 # SDV in GBM
 y_init = 10 # initial value at t_init
 
+# retarded time point
 def Tao(t):
     return 0.5*t
 
+# f(S(tao))
 def f(x):
     return 0.02 * x
 
+# theta(x)
 def theta(t):
     return 2 * t
 
+# sigma(x)
 def sigma(t):
     return t
 
@@ -52,8 +56,11 @@ def Euler_mara(N):
             t = t_init + (i - 1) * dt
             y = ys[i - 1]
             ys[i] = y + theta (t) * y * dt + sigma (t) * y * dW(dt)
+        # cur is refering to S(t)
         cur = ys[ts.size-1]
+        # pre is refering to S(Tao(t))
         pre = ys[int(ts.size * t1 / (t_end - t_init)) - 1]
+        #share is delta(t), which is the number of shares at Tao(t)
         share = f (pre)
         res.append(share * (cur - y_init) )
         
